@@ -1,0 +1,156 @@
+
+package org.usfirst.frc.team346.robot;
+
+import org.usfirst.frc.team346._Controllers.JaguarPositionPIDSource;
+
+import edu.wpi.first.wpilibj.BuiltInAccelerometer;
+import edu.wpi.first.wpilibj.Compressor;
+import edu.wpi.first.wpilibj.IterativeRobot;
+import edu.wpi.first.wpilibj.PIDSource;
+import edu.wpi.first.wpilibj.Preferences;
+import edu.wpi.first.wpilibj.command.Command;
+import edu.wpi.first.wpilibj.interfaces.Accelerometer;
+import edu.wpi.first.wpilibj.smartdashboard.*;
+import edu.wpi.first.wpilibj.Gyro;
+import edu.wpi.first.wpilibj.PIDController;
+
+/**
+ * The VM is configured to automatically run this class, and to call the
+ * functions corresponding to each mode, as described in the IterativeRobot
+ * documentation. If you change the name of this class or the package after
+ * creating this project, you must also update the manifest file in the resource
+ * directory.
+ */
+public class Robot extends IterativeRobot {
+	static Preferences prefs;
+    Command autoDriveCommand;
+    SendableChooser autoChooser;
+    SmartDashboard smartDash;
+    Compressor compressor;
+    Gyro gyro;
+    Gyro temp;
+    Accelerometer accel;
+    double angle;
+    double accelerationX;
+    double accelerationY;
+    double accelerationZ;
+    double xVal;
+    double yVal;
+    double zVal;
+    double rate;
+    double Test;           
+    double lastP;
+    double lastI;
+    double lastD;
+    PIDController distanceController;
+    PIDSource leftDistance;
+                                                       
+    /**
+     * This function is run when the robot is first started up and should be
+     * used for any initialization code.
+     */
+    public void robotInit() {
+    	 compressor = new Compressor(1);
+         //compressor.start();
+         prefs = Preferences.getInstance();
+         System.out.println("Preference Table)" + prefs.getKeys());
+         PreSets.setPresets(prefs);
+         autoChooser = new SendableChooser();
+         smartDash = new SmartDashboard();
+         smartDash.putNumber("P", 1);
+         Motors.prefs = prefs;
+         Motors.initMotors();
+         gyro = new Gyro(0);                                                                                                                
+         temp = new Gyro (1);
+         accel = new BuiltInAccelerometer();
+         accel = new BuiltInAccelerometer(Accelerometer.Range.k4G); 
+         angle = 0;
+         accelerationX = 0;
+         accelerationY = 0;
+         accelerationZ = 0;
+         xVal = accel.getX();
+         yVal = accel.getY();
+         zVal = accel.getZ(); 
+         rate = gyro.getRate();
+         gyro.reset();
+     	 gyro.initGyro();
+     	 lastP = prefs.getDouble("P",0);
+     	 lastI = prefs.getDouble("I", 0);
+     	 lastD = prefs.getDouble("D", 0);
+     	 leftDistance = new JaguarPositionPIDSource(Motors.leftMaster);
+     	 distanceController = new PIDController(1,0,0,leftDistance,Motors.yPairedDrive);
+         
+    }
+
+    public void autonomousInit() {
+    	distanceController.enable();
+    	Motors.leftMaster.setPosition(0);
+    	Motors.rightMaster.setPosition(0);
+    }
+    /**
+     * This function is called periodically during autonomous
+     */
+    @SuppressWarnings("static-access")
+	public void autonomousPeriodic() {
+    	smartDash.putNumber("Right Encoder", Motors.rightMaster.getPosition());
+    	smartDash.putNumber("Left Encoder", Motors.leftMaster.getPosition());
+    	distanceController.setSetpoint(-3);
+    }
+    
+    public void teleopInit() {
+    	distanceController.disable();
+    }
+
+    /**
+     * This function is called periodically during operator control
+     */
+	@SuppressWarnings({ "static-access" })
+	public void teleopPeriodic() {
+    	double currentP = prefs.getDouble("P", 0);
+    	double currentI = prefs.getDouble("I", 0);
+    	double currentD = prefs.getDouble("D", 0);
+		if(lastP !=  currentP || lastI != currentI || lastD != currentD)
+		{
+			Motors.leftMaster.setPID(currentP, currentI, currentD);
+			System.out.println("reset PID" + currentP + " " + currentI + " " +currentD);
+			Motors.rightMaster.setPID(-1*currentP, -1*currentI, currentD);
+			lastP = currentP;
+			lastI = currentI;
+			lastD = currentD;
+		}
+		
+		Motors.driveStandard();
+    	angle = gyro.getAngle();
+    	accelerationX = accel.getX();
+    	accelerationY = accel.getY();
+    	accelerationZ = accel.getZ();
+    	rate = gyro.getRate();
+    	smartDash.putNumber("Angle", angle);
+    	smartDash.putNumber("Rate", rate);
+    	smartDash.putNumber("Left Encoder", Motors.leftMaster.getPosition());
+    	smartDash.putNumber("Right Encoder", Motors.rightMaster.getPosition());
+    	smartDash.putNumber("AccelerationX", accelerationX);
+    	smartDash.putNumber("AccelerationY", accelerationY);
+    	smartDash.putNumber("AccelerationZ", accelerationZ);
+    	smartDash.getNumber("P", 0);
+    	smartDash.getNumber("I", 0);
+    	smartDash.getNumber("D", 0);
+    	smartDash.getNumber("Test", 0);
+    	smartDash.putNumber("LeftSpeed", Motors.leftMaster.getSpeed());
+    	smartDash.putNumber("RightSpeed", Motors.rightMaster.getSpeed());
+        System.out.println("Running");
+        System.out.println("Test" + smartDash.getNumber("P"));
+        try{
+        	System.out.println("P: " + prefs.getDouble("P", 0));
+        	
+        } catch(Exception e){e.printStackTrace();}
+    }
+    
+    /**
+     * This function is called periodically during test mode
+     */
+    public void testPeriodic() {
+    	
+    }
+    
+}
