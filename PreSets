@@ -1,0 +1,92 @@
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
+
+package org.usfirst.frc.team346.robot;
+
+import edu.wpi.first.wpilibj.Preferences;
+
+/**
+ *
+ * @author Chris
+ */
+public class PreSets {
+    private static Preferences smartDash;
+    private static int leftDrive1Port;
+    private static int leftDrive2Port;
+    private static int rightDrive1Port;
+    private static int rightDrive2Port;
+    private static int slideDrivePort;
+    private static int driveSolenoidOffPort;
+    private static int driveSolenoidOnPort;
+    private static int slideDriveSolenoidOnPort;
+    private static int slideDriveSolenoidOffPort;
+    private static boolean globalDrive;
+    private static int smartTest;
+    
+    public static void setPresets(Preferences smartDashboard) {
+        smartDash = smartDashboard;
+        smartTest = 99;
+        leftDrive1Port = 3;
+        leftDrive2Port = 5;
+        rightDrive1Port = 2;
+        rightDrive2Port = 1;
+        driveSolenoidOnPort = 1;
+        driveSolenoidOffPort = 2;
+        slideDriveSolenoidOnPort = 3;
+        slideDriveSolenoidOffPort = 4;
+        slideDrivePort = 4;
+        //redLightPort = smartDash.getInt("redLightPort", -1);
+        //blueLightPort = smartDash.getInt("blueLightPort", -1);
+    }
+    
+    public static int getSmartTest() {
+       return smartTest;
+    }
+    public static int getLeftDrive1Port() {
+        return leftDrive1Port;
+    }
+    
+    public static int getLeftDrive2Port() {
+        return leftDrive2Port;
+    }
+    
+    public static int getRightDrive1Port() {
+        return rightDrive1Port;
+    }
+    
+    public static int getRightDrive2Port() {
+        return rightDrive2Port;
+    }
+    
+    public static int getSlideDrivePort() {
+        return slideDrivePort;
+    }
+    
+    public static int getDriveSolenoidOffPort() {
+        return driveSolenoidOffPort;
+    }
+    
+    public static int getDriveSolenoidOnPort() {
+        return driveSolenoidOnPort;
+    }
+    
+    public static int getSlideDriveSolenoidOnPort() {
+        return slideDriveSolenoidOnPort;
+    }
+    
+    public static int getSlideDriveSolenoidOffPort() {
+        return slideDriveSolenoidOffPort;
+    }
+    
+    public static boolean getGlobalDrive() {
+        return globalDrive;
+    }
+    
+    public static void setGlobalDrive(boolean setGlobalDrive) {
+        globalDrive = setGlobalDrive;
+    }
+    
+}
