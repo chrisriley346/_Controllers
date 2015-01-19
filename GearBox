@@ -1,0 +1,51 @@
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
+
+package org.usfirst.frc.team346.robot;
+
+import org.usfirst.frc.team346._Controllers.PairedDrive;
+
+/**
+ *
+ * @author officemax1100
+ */
+public class GearBox {
+   private PairedDrive pairedGearBox;
+   
+   public GearBox(PairedDrive pairSet) {
+       this.pairedGearBox = pairSet;
+   }
+   
+   public void setGearBox(double output) {
+       pairedGearBox.set(output);
+   }
+   
+   public void setPairedScale(double setScale) {
+	   pairedGearBox.setScale(setScale);
+   }
+   
+   public void setPairedMasterScale(double setScale) {
+	   pairedGearBox.setMasterScale(setScale);
+   }
+   
+   public void setPairedSlaveScale(double setScale) {
+	   pairedGearBox.setSlaveScale(setScale);
+   }
+   
+   public double getPairedMasterScale() {
+	   return pairedGearBox.getMasterScale();
+   }
+   
+   public void driveFast() {
+	   Solenoids.driveFast();
+   }
+   
+   public void driveSlow() {
+	   Solenoids.driveSlow();
+   }
+}
+
+ 
