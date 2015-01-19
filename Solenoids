@@ -1,0 +1,57 @@
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
+
+package org.usfirst.frc.team346.robot;
+
+import edu.wpi.first.wpilibj.Solenoid;
+/**
+ *
+ * @author officemax1100
+ */
+public class Solenoids {
+    private static Solenoid driveSolenoidOn = new Solenoid(PreSets.getDriveSolenoidOnPort());
+    private static Solenoid driveSolenoidOff = new Solenoid(PreSets.getDriveSolenoidOffPort());
+    private static Solenoid slideSolenoidOn = new Solenoid(PreSets.getSlideDriveSolenoidOnPort());
+    private static Solenoid slideSolenoidOff = new Solenoid(PreSets.getSlideDriveSolenoidOffPort());
+    
+    private static void retractSlideSolenoid() {
+        slideSolenoidOn.set(true);
+        slideSolenoidOff.set(false);
+    }
+    
+    private static void extendSlideSolenoid() {
+        slideSolenoidOn.set(false);
+        slideSolenoidOff.set(true);
+    }
+    
+    private static void extendFastDrive() {
+        driveSolenoidOn.set(false);
+        driveSolenoidOff.set(true);
+    }
+    
+    private static void retractFastDrive() {
+        driveSolenoidOn.set(true);
+        driveSolenoidOff.set(false);
+    }
+    
+    public static void driveSideways() {
+        extendSlideSolenoid();
+    }
+    
+    public static void driveNormal() {
+        retractSlideSolenoid();
+    }
+    
+    public static void driveFast() {
+        extendFastDrive();
+    }
+    
+    public static void driveSlow() {
+        retractFastDrive();
+    }
+}
+
+    
