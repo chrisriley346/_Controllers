@@ -1,0 +1,102 @@
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
+
+package org.usfirst.frc.team346.robot;
+
+
+import org.usfirst.frc.team346._Controllers.PairedDrive;
+import org.usfirst.frc.team346._Controllers._CANJaguar;
+import org.usfirst.frc.team346._Controllers._Talon;
+
+import edu.wpi.first.wpilibj.CANJaguar;
+import edu.wpi.first.wpilibj.Talon;
+import edu.wpi.first.wpilibj.Jaguar;
+import edu.wpi.first.wpilibj.smartdashboard.*;
+import edu.wpi.first.wpilibj.Preferences;
+
+
+/**
+ *
+ * @author officemax1100
+ */
+public class Motors {
+    static Preferences prefs;
+    private static GearBox leftDrive;
+    private static GearBox rightDrive;
+    private static _Talon slideTalon;
+    public static _CANJaguar leftMaster;
+    public static _Talon leftSlave;
+    public static _CANJaguar rightMaster;
+    public static _Talon rightSlave;
+    public static PairedDrive leftPair;
+    public static PairedDrive rightPair;
+    public static PairedDrive yPairedDrive;
+    
+    public static void initMotors() {  
+    	//prefs.getInstance();
+        try {
+        	leftMaster = new _CANJaguar(PreSets.getLeftDrive1Port());
+        	leftMaster.setSpeedMode(CANJaguar.kQuadEncoder,250, prefs.getDouble("P",0), prefs.getDouble("I", 0), prefs.getDouble("D",0));
+        	//System.out.println(prefs.getDouble("P"));
+        	leftMaster.enableControl(0);
+        } catch(Exception e) {
+        	e.printStackTrace();
+        }
+        leftSlave = new _Talon(PreSets.getLeftDrive2Port());
+        try {
+        	rightMaster = new _CANJaguar(PreSets.getRightDrive1Port());
+        	rightMaster.setSpeedMode(CANJaguar.kQuadEncoder,250, -1*prefs.getDouble("P", 0), -1*prefs.getDouble("I", 0), prefs.getDouble("D", 0));
+        	rightMaster.enableControl(0);
+        } catch(Exception e) {
+        	e.printStackTrace();	
+        }
+        rightSlave = new _Talon(PreSets.getRightDrive2Port());
+        slideTalon = new _Talon(PreSets.getSlideDrivePort());
+        leftPair = new PairedDrive(leftMaster,leftSlave);
+        rightPair = new PairedDrive(rightMaster,rightSlave);
+        leftDrive = new GearBox(leftPair);
+        rightDrive = new GearBox(rightPair);
+        yPairedDrive = new PairedDrive(leftPair,rightPair);
+        leftPair.setMasterScale(70);
+        rightPair.setMasterScale(-70);
+        
+        yPairedDrive.setSlaveScale(-1);
+        yPairedDrive.slaveVoltage = false;
+    }
+    
+    public static void stopDriveMotors() {
+        leftDrive.setGearBox(0);
+        rightDrive.setGearBox(0);
+    }
+    
+    public static void driveStandard() {
+        if(Joysticks.getRightJoyButtonPushed(1) 
+                && !Joysticks.getLeftJoyButtonPushed(1)) {
+            Solenoids.driveSideways();
+            slideTalon.set(Joysticks.getRightJoyX());
+            leftDrive.setGearBox(0);
+            rightDrive.setGearBox(0);
+        } else if(!Joysticks.getRightJoyButtonPushed(1) && Joysticks.getLeftJoyButtonPushed(1)) {            
+            Solenoids.driveNormal();
+            leftDrive.driveFast();
+            rightDrive.driveFast();
+            leftDrive.setPairedMasterScale(Robot.prefs.getDouble("FastScale", 120));
+            rightDrive.setPairedMasterScale(Robot.prefs.getDouble("FastScale", 120)*-1);
+            leftDrive.setGearBox(Joysticks.getLeftJoyY());
+            rightDrive.setGearBox(-Joysticks.getRightJoyY());
+            slideTalon.set(0);
+        } else {
+            Solenoids.driveNormal();
+            leftDrive.driveSlow();
+            rightDrive.driveSlow();
+            leftDrive.setPairedMasterScale(Robot.prefs.getDouble("SlowScale", 70));
+            rightDrive.setPairedMasterScale(Robot.prefs.getDouble("SlowScale", 70)*-1);
+            leftDrive.setGearBox(Joysticks.getLeftJoyY());
+            rightDrive.setGearBox(-1*Joysticks.getRightJoyY());
+            slideTalon.set(0);
+        }
+    }
+}
