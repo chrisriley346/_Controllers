@@ -34,6 +34,7 @@ public class Motors {
     public static PairedDrive leftPair;
     public static PairedDrive rightPair;
     public static PairedDrive yPairedDrive;
+    public static PairedDrive yawPairedDrive;
     
     public static void initMotors() {  
     	//prefs.getInstance();
@@ -63,6 +64,9 @@ public class Motors {
         leftPair.setMasterScale(70);
         rightPair.setMasterScale(-70);
         
+        yawPairedDrive = new PairedDrive(leftPair,rightPair);
+        yawPairedDrive.slaveVoltage = false;
+        
         yPairedDrive.setSlaveScale(-1);
         yPairedDrive.slaveVoltage = false;
     }
@@ -73,6 +77,10 @@ public class Motors {
     }
     
     public static void driveStandard() {
+    	if(Joysticks.getButtonBoardButtonPushed(1)) {
+    		leftMaster.setPosition(0);
+    		rightMaster.setPosition(0);
+    	}
         if(Joysticks.getRightJoyButtonPushed(1) 
                 && !Joysticks.getLeftJoyButtonPushed(1)) {
             Solenoids.driveSideways();
@@ -94,8 +102,10 @@ public class Motors {
             rightDrive.driveSlow();
             leftDrive.setPairedMasterScale(Robot.prefs.getDouble("SlowScale", 70));
             rightDrive.setPairedMasterScale(Robot.prefs.getDouble("SlowScale", 70)*-1);
-            leftDrive.setGearBox(Joysticks.getLeftJoyY());
-            rightDrive.setGearBox(-1*Joysticks.getRightJoyY());
+            //leftDrive.setGearBox(Joysticks.getLeftJoyY());
+            //rightDrive.setGearBox(-1*Joysticks.getRightJoyY());
+            leftDrive.setGearBox(Joysticks.getControllerLeftY());
+            rightDrive.setGearBox(-1*Joysticks.getControllerRightY());
             slideTalon.set(0);
         }
     }
