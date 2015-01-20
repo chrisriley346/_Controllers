@@ -48,6 +48,10 @@ public class Joysticks {
     }
     
     public static double getControllerLeftY() {
-    	return xController.getY();
+    	return xController.getRawAxis(1);
+    }
+    
+    public static double getControllerRightY() {
+    	return xController.getRawAxis(5);
     }
 }
