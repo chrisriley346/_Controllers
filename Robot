@@ -1,6 +1,7 @@
 
 package org.usfirst.frc.team346.robot;
 
+import org.usfirst.frc.team346._Controllers.GyroPIDSource;
 import org.usfirst.frc.team346._Controllers.JaguarPositionPIDSource;
 
 import edu.wpi.first.wpilibj.BuiltInAccelerometer;
@@ -43,7 +44,9 @@ public class Robot extends IterativeRobot {
     double lastI;
     double lastD;
     PIDController distanceController;
+    PIDController angleController;
     PIDSource leftDistance;
+    PIDSource robotAngle;
                                                        
     /**
      * This function is run when the robot is first started up and should be
@@ -78,14 +81,16 @@ public class Robot extends IterativeRobot {
      	 lastI = prefs.getDouble("I", 0);
      	 lastD = prefs.getDouble("D", 0);
      	 leftDistance = new JaguarPositionPIDSource(Motors.leftMaster);
+     	 robotAngle = new GyroPIDSource(gyro);
      	 distanceController = new PIDController(1,0,0,leftDistance,Motors.yPairedDrive);
-         
+     	 angleController = new PIDController(1,0,0,robotAngle,Motors.yawPairedDrive);
     }
 
     public void autonomousInit() {
     	distanceController.enable();
     	Motors.leftMaster.setPosition(0);
     	Motors.rightMaster.setPosition(0);
+    	gyro.reset();
     }
     /**
      * This function is called periodically during autonomous
@@ -94,11 +99,20 @@ public class Robot extends IterativeRobot {
 	public void autonomousPeriodic() {
     	smartDash.putNumber("Right Encoder", Motors.rightMaster.getPosition());
     	smartDash.putNumber("Left Encoder", Motors.leftMaster.getPosition());
+    	smartDash.putNumber("Gyro Angle", gyro.getAngle());
+    	smartDash.putNumber("Angle Error", angleController.getError());
+    	smartDash.putNumber("Distance Error", distanceController.getError());
     	distanceController.setSetpoint(-3);
+    	if(distanceController.getError() < .01) {
+    		distanceController.disable();
+    		angleController.enable();
+    		angleController.setSetpoint(90);
+    	}
     }
     
     public void teleopInit() {
     	distanceController.disable();
+    	angleController.disable();
     }
 
     /**
